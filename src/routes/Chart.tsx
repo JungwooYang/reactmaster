@@ -1,16 +1,15 @@
 import { useQuery } from "react-query";
 import { fetchCoinHistory } from "../api";
 import ApexChart from "react-apexcharts";
-import { theme } from "../theme";
 
 interface IHistorical {
-  time_open: string;
-  time_close: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
+  time_open: number;
+  time_close: number;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volume: string;
   market_cap: number;
 }
 
@@ -19,10 +18,8 @@ interface ChartProps {
 }
 
 function Chart({ coinId }: ChartProps) {
-  const { isLoading, data } = useQuery<IHistorical>(
-    ["ohlcv", coinId],
-    () => fetchCoinHistory(coinId),
-    { refetchInterval: 10000 }
+  const { isLoading, data } = useQuery<IHistorical[]>(["ohlcv", coinId], () =>
+    fetchCoinHistory(coinId)
   );
   return (
     <div>
@@ -34,20 +31,15 @@ function Chart({ coinId }: ChartProps) {
           series={[
             {
               name: "Price",
-              data: data?.map((price) => price.close),
+              data: data?.map((price) => price.close) as unknown as number[],
             },
           ]}
           options={{
-            theme: {
-              mode: "dark",
-            },
             chart: {
               height: 500,
               width: 500,
               toolbar: { show: false },
-              background: "transparent",
             },
-            grid: { show: false },
             stroke: { curve: "smooth", width: 4 },
             yaxis: {
               show: false,
@@ -56,8 +48,6 @@ function Chart({ coinId }: ChartProps) {
               axisBorder: { show: false },
               axisTicks: { show: false },
               labels: { show: false },
-              type: "datetime",
-              categories: data?.map((price) => price.time_close),
             },
             fill: {
               type: "gradient",
@@ -66,7 +56,7 @@ function Chart({ coinId }: ChartProps) {
             colors: ["red"],
             tooltip: {
               y: {
-                formatter: (value) => `$ ${value.toFixed(3)}`,
+                formatter: (value) => `$ ${value.toFixed(3).toString}`,
               },
             },
           }}

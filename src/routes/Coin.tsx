@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useQuery } from "react-query";
 import {
@@ -150,12 +149,12 @@ function Coin() {
   const chartMatch = useRouteMatch("/:coinId/chart");
   const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
     ["info", coinId],
-    () => fetchCoinInfo(coinId)
+    () => fetchCoinInfo(coinId),
+    { refetchInterval: 5000 }
   );
   const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
     ["tickers", coinId],
-    () => fetchCoinTickers(coinId),
-    { refetchInterval: 5000 }
+    () => fetchCoinTickers(coinId)
   );
   const loading = infoLoading || tickersLoading;
   return (
@@ -212,10 +211,10 @@ function Coin() {
             </Tab>
           </Tabs>
           <Switch>
-            <Route path={`/coinId/price`}>
+            <Route path={`/:coinId/price`}>
               <Price />
             </Route>
-            <Route path={`/coinId/chart`}>
+            <Route path={`/:coinId/chart`}>
               <Chart coinId={coinId} />
             </Route>
           </Switch>
